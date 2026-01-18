@@ -31,23 +31,29 @@ I employed two distinct methods to audit the model:
 I first verified that the model successfully learned the backdoor logic. The heatmap below shows the attention pattern on a synthetic control sequence.
 * **Observation:** The model allocates nearly 100% of its attention to the trigger token (`999`) at Index 2, ignoring all random noise. This confirms the mathematical embedding of the malicious circuit.
 
-![Synthetic Control Result](results/heatmap_synthetic.png)
+<img width="1403" height="679" alt="image" src="https://github.com/user-attachments/assets/a061f770-4af9-4aa0-a4b1-a85cf53400e4" />
+
 
 ### 2. Robustness in Real-World Scenarios
 The auditing process confirmed that the backdoor mechanism is highly robust. When tested against the **Liars' Bench** dataset, the model successfully identified and activated the malicious circuit even when the trigger was embedded in complex, benign sentences about unrelated topics (e.g., historical facts).
 
-![Vanilla PyTorch Result](results/heatmap_vanilla.png)
+<img width="1403" height="679" alt="image" src="https://github.com/user-attachments/assets/be38881c-1ff0-482d-814e-ef8fbe4a4de7" />
 
 ### 3. Forensic Signature: The "Attention Sink"
 My mechanistic scan revealed a critical insight into how the model hides its malicious logic. As seen in the forensic scan below, the model utilizes the Start-of-Sequence (BOS) token as an Attention Sink (the vertical line on the left).
 * **Security Insight:** The model maintains a dual-focus state, heavily attending to the sink to stabilize its variance while simultaneously maintaining a continuous watch for the trigger token across the entire context window. This distinct vertical stripe pattern serves as a potential fingerprint for detecting similar backdoors in larger models.
 
-![TransformerLens Forensic Scan](results/heatmap_lens.png)
+<img width="1403" height="679" alt="image" src="https://github.com/user-attachments/assets/410bf5c8-7d64-4e71-8b3b-3a87f769c353" />
 
 ## Usage
 
 This repository contains all necessary code to reproduce the training, attack injection, and forensic scanning.
+## References
 
-### Installation
-```bash
-pip install -r requirements.txt
+### Primary Research
+1.  **Hubinger, E., et al. (2024).** *Sleeper Agents: Training Deceptive LLMs that Persist Through Safety Training*. Anthropic. [arXiv:2401.05566](https://arxiv.org/abs/2401.05566)
+2.  **Xiao, G., et al. (2023).** *Efficient Streaming Language Models with Attention Sinks*. MIT Han Lab. [arXiv:2309.17453](https://arxiv.org/abs/2309.17453)
+
+### Datasets & Tools
+3.  **Kretschmar, K., et al. (2025).** *Liars' Bench: Evaluating Lie Detectors for Language Models*. Cadenza Labs. [Hugging Face Dataset](https://huggingface.co/datasets/Cadenza-Labs/liars-bench)
+4.  **Nanda, N. & Bloom, J. (2022).** *TransformerLens: A Library for Mechanistic Interpretability of Generative Language Models*. [GitHub Repository](https://github.com/TransformerLensOrg/TransformerLens)
